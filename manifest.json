@@ -1,0 +1,15 @@
+{
+  "name": "Frutería POS",
+  "short_name": "Frutería",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef7f2",
+  "theme_color": "#2e7d32",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3194/3194591.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
