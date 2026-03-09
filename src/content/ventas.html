@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ventas | Frutas y Legumbres</title>
+  <meta name="description"
+    content="Proyecto para un punto de venta de frutas y legumbres, con gestion de inventario, ventas e historial.">
+  <meta name="author" content="Luis Francisco Matlalcuatzi Gonzalez.">
+  <meta name="theme-color" content="#2e7d32">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+  <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-expand-lg bg-success-subtle border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-semibold text-success" href="../../index.html">Frutas y Legumbres</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar" aria-expanded="false" aria-label="Abrir navegacion">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="../../index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="./inventario.html">Inventario</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="./ventas.html">Ventas</a></li>
+          <li class="nav-item"><a class="nav-link" href="./historial.html">Historial</a></li>
+          <li class="nav-item"><a class="nav-link" href="./reporte.html">Reportes</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4 flex-grow-1">
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h2 class="h5">Operacion Rapida</h2>
+            <p id="producto-seleccionado-txt" class="text-secondary mb-2">Selecciona un producto...</p>
+            <input type="hidden" id="id-seleccionado">
+
+            <label for="cantidad-venta" class="form-label">Cantidad</label>
+            <input type="number" inputmode="decimal" id="cantidad-venta" class="form-control mb-2" placeholder="0.00"
+              step="0.01">
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="forzar-promo" checked>
+              <label class="form-check-label" for="forzar-promo">Aplicar promocion</label>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button class="btn btn-success" onclick="agregarACuenta()">Agregar al Ticket</button>
+              <button class="btn btn-outline-warning" onclick="limpiarCuenta()">Limpiar Ticket</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">Ticket Actual</h2>
+              <span class="badge text-bg-success">POS</span>
+            </div>
+
+            <div class="table-responsive mb-3">
+              <table class="table table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Cant</th>
+                    <th>Sub</th>
+                    <th>Accion</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-cuenta"></tbody>
+              </table>
+            </div>
+
+            <div class="row g-2 align-items-end">
+              <div class="col-12 col-md-4">
+                <div class="fw-semibold">Total: $<span id="total-cuenta">0.00</span></div>
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="pago-cliente" class="form-label">Pago</label>
+                <input type="number" inputmode="decimal" id="pago-cliente" class="form-control" placeholder="0.00"
+                  oninput="calcularCambio()">
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="fw-semibold">Cambio: $<span id="cambio-cliente">0.00</span></div>
+              </div>
+            </div>
+
+            <div class="d-grid d-md-flex gap-2 mt-3">
+              <button class="btn btn-danger" onclick="terminarVenta()">Cobrar y Registrar Venta</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="h5 mb-0">Catalogo de Productos</h3>
+          <a class="btn btn-sm btn-outline-secondary" href="./inventario.html">Administrar Inventario</a>
+        </div>
+        <input type="text" id="buscador-caja" class="form-control mb-3" placeholder="Buscar producto..."
+          onkeyup="filtrarProductos()">
+        <div id="grid-productos" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light text-center py-1 mt-auto border-top">
+    <div class="container">
+      <span class="text-muted">Frutas y Legumbres. Por Luis Francisco Matlalcuatzi Gonzalez.</span>
+    </div>
+  </footer>
+
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/services/storage.service.js"></script>
+  <script src="../js/services/image.service.js"></script>
+  <script src="../js/services/promotion.engine.js"></script>
+  <script src="../js/app/fruteria.app.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

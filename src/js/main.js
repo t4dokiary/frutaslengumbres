@@ -1,14 +1,26 @@
 const LS_PRODUCTOS_KEY = 'fruteria_productos_v7';
 const LS_VENTAS_KEY = 'fruteria_ventas_v7';
+const APP_ROOT_PATH = window.location.pathname.includes('/src/content/') ? '../../' : './';
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(`${APP_ROOT_PATH}sw.js`).catch(() => {
+      // Ignore registration failures when service worker is not present yet.
+    });
+  });
 }
 
 const app = new FruteriaApp(new StorageService(LS_PRODUCTOS_KEY, LS_VENTAS_KEY));
 
+function hasRequiredDom() {
+  const requiredIds = ['tabla-inventario', 'grid-productos', 'tabla-ventas', 'tabla-cuenta', 'metric-tickets'];
+  return requiredIds.some(id => document.getElementById(id));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  app.init();
+  if (hasRequiredDom()) {
+    app.init();
+  }
 });
 
 function cambiarPestana(pestana) {
@@ -49,6 +61,10 @@ function importarDatos(event) {
 
 function filtrarProductos() {
   app.filtrarProductos();
+}
+
+function filtrarInventario() {
+  app.filtrarInventario();
 }
 
 function seleccionarProductoCaja(id, nombre, unidad) {

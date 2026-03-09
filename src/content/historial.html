@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frutas y Legumbres</title>
+  <meta name="description"
+    content="Proycto para un punto de venta de frutas y legumbres, con gestión de inventario, ventas e historial. Desarrollado con HTML, CSS y JavaScript.">
+  <meta name="author" content="Luis Francisco Matlalcuatzi Gonzalez.">
+  <meta name="keywords"
+    content="frutas, legumbres, venta, inventario, punto de venta, POS, gestión de ventas, historial de ventas, dashboard, JavaScript, HTML, CSS">
+  <meta name="theme-color" content="#2e7d32">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+  <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+  <nav class="navbar navbar-expand-lg bg-success-subtle border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-semibold text-success" href="../../index.html">Frutas y Legumbres</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar" aria-expanded="false" aria-label="Abrir navegacion">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="../../index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="./inventario.html">Inventario</a></li>
+          <li class="nav-item"><a class="nav-link" href="./ventas.html">Ventas</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="./historial.html">Historial</a></li>
+          <li class="nav-item"><a class="nav-link" href="./reporte.html">Reportes</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4 flex-grow-1">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+          <h2 class="h4 mb-0">Historial y Corte</h2>
+          <div class="d-flex align-items-center gap-2">
+            <span class="fw-semibold">Total Vendido Hoy:</span>
+            <span class="badge text-bg-success fs-6">$<span id="total-dia">0.00</span></span>
+          </div>
+        </div>
+
+        <div class="table-responsive mb-3">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Detalle de Articulos</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-ventas"></tbody>
+          </table>
+        </div>
+
+        <button class="btn btn-outline-danger" onclick="borrarHistorial()">Hacer Corte (Empezar en cero)</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light text-center py-1 mt-auto border-top">
+    <div class="container">
+      <span class="text-muted">Frutas y Legumbres. Por Luis Francisco Matlalcuatzi Gonzalez.</span>
+    </div>
+  </footer>
+
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/services/storage.service.js"></script>
+  <script src="../js/services/image.service.js"></script>
+  <script src="../js/services/promotion.engine.js"></script>
+  <script src="../js/app/fruteria.app.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

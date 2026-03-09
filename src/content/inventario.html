@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario | Frutas y Legumbres</title>
+  <meta name="description"
+    content="Proyecto para un punto de venta de frutas y legumbres, con gestion de inventario, ventas e historial.">
+  <meta name="author" content="Luis Francisco Matlalcuatzi Gonzalez.">
+  <meta name="theme-color" content="#2e7d32">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+  <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-expand-lg bg-success-subtle border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-semibold text-success" href="../../index.html">Frutas y Legumbres</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar" aria-expanded="false" aria-label="Abrir navegacion">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="../../index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="./inventario.html">Inventario</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="./ventas.html">Ventas</a></li>
+          <li class="nav-item"><a class="nav-link" href="./historial.html">Historial</a></li>
+          <li class="nav-item"><a class="nav-link" href="./reporte.html">Reportes</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4 flex-grow-1">
+    <div class="row g-4">
+      <div class="col-12 col-xl-5">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="h4 mb-3">Gestion de Productos</h2>
+
+            <div class="form-inventario d-grid gap-3">
+              <input type="hidden" id="edit-id">
+              <div>
+                <label for="nombre-prod" class="form-label">Nombre</label>
+                <input type="text" id="nombre-prod" class="form-control" placeholder="Ej. Naranja">
+              </div>
+
+              <div class="row g-2">
+                <div class="col-8">
+                  <label for="precio-prod" class="form-label">Precio</label>
+                  <input type="number" inputmode="decimal" id="precio-prod" class="form-control" placeholder="0.00"
+                    step="0.50">
+                </div>
+                <div class="col-4">
+                  <label for="unidad-prod" class="form-label">Unidad</label>
+                  <select id="unidad-prod" class="form-select">
+                    <option value="kg">Por Kilo</option>
+                    <option value="pza">Por Pieza</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label for="img-prod" class="form-label">Foto del producto</label>
+                <input type="file" id="img-prod" class="form-control" accept="image/*"
+                  onchange="comprimirYConvertirImagen(event)">
+                <input type="hidden" id="img-base64">
+                <img id="preview-img" class="img-thumbnail mt-2" style="display:none; width: 100px;" alt="Preview">
+              </div>
+
+              <div class="border rounded p-3 bg-light-subtle">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h4 class="h6 mb-0">Promociones</h4>
+                  <button type="button" class="btn btn-sm btn-outline-primary"
+                    onclick="agregarFilaPromo()">Agregar</button>
+                </div>
+                <div id="lista-promos"></div>
+              </div>
+
+              <div class="d-grid gap-2 d-md-flex">
+                <button class="btn btn-success" onclick="guardarProducto()">Guardar Producto</button>
+                <button class="btn btn-outline-secondary" onclick="limpiarFormularioInventario()">Limpiar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-7">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <h3 class="h5 mb-3">Catalogo Actual</h3>
+            <input type="text" id="buscador-inventario" class="form-control mb-3"
+              placeholder="Buscar producto en inventario..." onkeyup="filtrarInventario()">
+            <div class="table-responsive overflow-auto" style="max-height: 360px;">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Foto</th>
+                    <th>Info</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-inventario"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-info-subtle">
+          <div class="card-body">
+            <h4 class="h6 mb-3">Respaldos de Seguridad</h4>
+            <div class="d-grid gap-2 d-md-flex">
+              <button class="btn btn-primary" onclick="exportarDatos()">Descargar Respaldo</button>
+              <button class="btn btn-outline-primary" onclick="document.getElementById('import-file').click()">Subir
+                Respaldo</button>
+              <input type="file" id="import-file" accept=".json" style="display:none" onchange="importarDatos(event)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light text-center py-1 mt-auto border-top">
+    <div class="container">
+      <span class="text-muted">Frutas y Legumbres. Por Luis Francisco Matlalcuatzi Gonzalez.</span>
+    </div>
+  </footer>
+
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/services/storage.service.js"></script>
+  <script src="../js/services/image.service.js"></script>
+  <script src="../js/services/promotion.engine.js"></script>
+  <script src="../js/app/fruteria.app.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

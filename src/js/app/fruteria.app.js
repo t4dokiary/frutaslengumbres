@@ -7,9 +7,17 @@ class FruteriaApp {
   }
 
   init() {
-    this.actualizarTablas();
-    this.actualizarTablaVentas();
-    this.actualizarDashboard();
+    if (document.getElementById('tabla-inventario') || document.getElementById('grid-productos')) {
+      this.actualizarTablas();
+    }
+
+    if (document.getElementById('tabla-ventas') && document.getElementById('total-dia')) {
+      this.actualizarTablaVentas();
+    }
+
+    if (document.getElementById('metric-tickets')) {
+      this.actualizarDashboard();
+    }
   }
 
   cambiarPestana(pestana) {
@@ -40,16 +48,24 @@ class FruteriaApp {
 
   agregarFilaPromo(cant = '', precio = '', tipo = 'multiplos') {
     const div = document.createElement('div');
-    div.className = 'promo-fila';
+    div.className = 'promo-fila row g-2 align-items-center mb-2';
     div.innerHTML = `
-      <input type="number" inputmode="decimal" class="p-cant" placeholder="Lleva" value="${cant}">
-      <input type="number" inputmode="decimal" class="p-precio" placeholder="Por ($)" value="${precio}">
-      <select class="p-tipo">
-        <option value="multiplos" ${tipo === 'multiplos' ? 'selected' : ''}>Multiples</option>
-        <option value="exacto" ${tipo === 'exacto' ? 'selected' : ''}>Exacto</option>
-        <option value="proporcional" ${tipo === 'proporcional' ? 'selected' : ''}>Mayores</option>
-      </select>
-      <button type="button" class="btn-danger btn-small" onclick="this.parentElement.remove()">❌</button>
+      <div class="col-12 col-md-3">
+        <input type="number" inputmode="decimal" class="p-cant form-control" placeholder="Lleva" value="${cant}">
+      </div>
+      <div class="col-12 col-md-3">
+        <input type="number" inputmode="decimal" class="p-precio form-control" placeholder="Por ($)" value="${precio}">
+      </div>
+      <div class="col-12 col-md-4">
+        <select class="p-tipo form-select">
+          <option value="multiplos" ${tipo === 'multiplos' ? 'selected' : ''}>Multiples</option>
+          <option value="exacto" ${tipo === 'exacto' ? 'selected' : ''}>Exacto</option>
+          <option value="proporcional" ${tipo === 'proporcional' ? 'selected' : ''}>Mayores</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-2">
+        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="this.parentElement.parentElement.remove()">Quitar</button>
+      </div>
     `;
     document.getElementById('lista-promos').appendChild(div);
   }
@@ -200,28 +216,55 @@ class FruteriaApp {
   }
 
   filtrarProductos() {
-    const texto = document.getElementById('buscador-caja').value.toLowerCase();
-    document.querySelectorAll('#grid-productos .card').forEach(tarjeta => {
+    const buscador = document.getElementById('buscador-caja');
+    if (!buscador) return;
+
+    const texto = buscador.value.toLowerCase();
+    document.querySelectorAll('#grid-productos .product-item').forEach(tarjeta => {
       const nombre = tarjeta.querySelector('.title').innerText.toLowerCase();
-      tarjeta.style.display = nombre.includes(texto) ? 'block' : 'none';
+      tarjeta.style.display = nombre.includes(texto) ? '' : 'none';
+    });
+  }
+
+  filtrarInventario() {
+    const buscador = document.getElementById('buscador-inventario');
+    const tabla = document.getElementById('tabla-inventario');
+    if (!buscador || !tabla) return;
+
+    const texto = buscador.value.toLowerCase().trim();
+    tabla.querySelectorAll('tr').forEach(fila => {
+      const contenido = fila.innerText.toLowerCase();
+      fila.style.display = contenido.includes(texto) ? '' : 'none';
     });
   }
 
   seleccionarProductoCaja(id, nombre, unidad) {
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    const selectedTxt = document.getElementById('producto-seleccionado-txt');
+    const idSeleccionado = document.getElementById('id-seleccionado');
+    const cantidadInput = document.getElementById('cantidad-venta');
+    if (!selectedTxt || !idSeleccionado || !cantidadInput) return;
+
+    document.querySelectorAll('.product-card').forEach(c => {
+      c.classList.remove('border-success', 'border-2', 'shadow');
+    });
 
     const selectedCard = document.getElementById('card-' + id);
-    if (selectedCard) selectedCard.classList.add('selected');
+    if (selectedCard) selectedCard.classList.add('border-success', 'border-2', 'shadow');
 
-    document.getElementById('id-seleccionado').value = id;
-    document.getElementById('producto-seleccionado-txt').innerText = `👉 Seleccionaste: ${nombre}`;
-    document.getElementById('cantidad-venta').placeholder = `Cantidad en ${unidad}`;
-    document.getElementById('cantidad-venta').focus();
+    idSeleccionado.value = id;
+    selectedTxt.innerText = `👉 Seleccionaste: ${nombre}`;
+    cantidadInput.placeholder = `Cantidad en ${unidad}`;
+    cantidadInput.focus();
   }
 
   agregarACuenta() {
-    const id = parseInt(document.getElementById('id-seleccionado').value, 10);
-    const cantidadVenta = parseFloat(document.getElementById('cantidad-venta').value);
+    const idInput = document.getElementById('id-seleccionado');
+    const cantidadInput = document.getElementById('cantidad-venta');
+    const promoCheckbox = document.getElementById('forzar-promo');
+    if (!idInput || !cantidadInput || !promoCheckbox) return;
+
+    const id = parseInt(idInput.value, 10);
+    const cantidadVenta = parseFloat(cantidadInput.value);
 
     if (isNaN(id) || isNaN(cantidadVenta) || cantidadVenta <= 0) {
       return alert('Selecciona producto y cantidad.');
@@ -232,7 +275,7 @@ class FruteriaApp {
       return alert('El producto ya no existe en inventario.');
     }
 
-    const quierePromo = document.getElementById('forzar-promo').checked;
+    const quierePromo = promoCheckbox.checked;
     const precioCalculado = PromotionEngine.calculateSubtotal(producto, cantidadVenta, quierePromo);
 
     this.cuentaActual.push({
@@ -243,8 +286,8 @@ class FruteriaApp {
       idTicket: Date.now()
     });
 
-    document.getElementById('forzar-promo').checked = true;
-    document.getElementById('cantidad-venta').value = '';
+    promoCheckbox.checked = true;
+    cantidadInput.value = '';
     this.renderizarCuenta();
   }
 
@@ -254,18 +297,28 @@ class FruteriaApp {
   }
 
   limpiarCuenta() {
+    const pagoCliente = document.getElementById('pago-cliente');
+    const selectedTxt = document.getElementById('producto-seleccionado-txt');
+    const idSeleccionado = document.getElementById('id-seleccionado');
+
     this.cuentaActual = [];
-    document.getElementById('pago-cliente').value = '';
-    document.getElementById('producto-seleccionado-txt').innerText = 'Selecciona un producto...';
-    document.getElementById('id-seleccionado').value = '';
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    if (pagoCliente) pagoCliente.value = '';
+    if (selectedTxt) selectedTxt.innerText = 'Selecciona un producto...';
+    if (idSeleccionado) idSeleccionado.value = '';
+    document.querySelectorAll('.product-card').forEach(c => {
+      c.classList.remove('border-success', 'border-2', 'shadow');
+    });
     this.renderizarCuenta();
   }
 
   calcularCambio() {
-    const total = parseFloat(document.getElementById('total-cuenta').innerText);
-    const pago = parseFloat(document.getElementById('pago-cliente').value) || 0;
     const spanCambio = document.getElementById('cambio-cliente');
+    const totalCuenta = document.getElementById('total-cuenta');
+    const pagoCliente = document.getElementById('pago-cliente');
+    if (!spanCambio || !totalCuenta || !pagoCliente) return;
+
+    const total = parseFloat(totalCuenta.innerText) || 0;
+    const pago = parseFloat(pagoCliente.value) || 0;
 
     spanCambio.innerText = pago >= total && total > 0 ? (pago - total).toFixed(2) : '0.00';
     spanCambio.style.color = pago >= total && total > 0 ? '#2e7d32' : (pago > 0 ? '#c62828' : '#333');
@@ -277,7 +330,10 @@ class FruteriaApp {
     }
 
     const total = this.cuentaActual.reduce((sum, item) => sum + item.subtotal, 0);
-    const pago = parseFloat(document.getElementById('pago-cliente').value) || 0;
+    const pagoInput = document.getElementById('pago-cliente');
+    if (!pagoInput) return;
+
+    const pago = parseFloat(pagoInput.value) || 0;
     if (pago < total) {
       return alert('El pago no cubre el total del ticket.');
     }
@@ -300,6 +356,9 @@ class FruteriaApp {
 
   actualizarTablaVentas() {
     const tbodyVentas = document.getElementById('tabla-ventas');
+    const totalDiaEl = document.getElementById('total-dia');
+    if (!tbodyVentas || !totalDiaEl) return;
+
     const hoy = Utils.getTodayLocalISO();
     let totalDia = 0;
 
@@ -316,12 +375,12 @@ class FruteriaApp {
       tbodyVentas.innerHTML += `
         <tr>
           <td>${hora}</td>
-          <td style="font-size: 14px;">${detallesHtml || '-'}</td>
+          <td class="small">${detallesHtml || '-'}</td>
           <td><strong>$${venta.total.toFixed(2)}</strong></td>
         </tr>`;
     });
 
-    document.getElementById('total-dia').innerText = totalDia.toFixed(2);
+    totalDiaEl.innerText = totalDia.toFixed(2);
   }
 
   borrarHistorial() {
@@ -334,6 +393,13 @@ class FruteriaApp {
   }
 
   actualizarDashboard() {
+    const ticketsEl = document.getElementById('metric-tickets');
+    const ingresosEl = document.getElementById('dash-ingresos');
+    const topProdEl = document.getElementById('metric-top-prod');
+    const ulCant = document.getElementById('list-top-cant');
+    const ulDinero = document.getElementById('list-top-dinero');
+    if (!ticketsEl || !ingresosEl || !topProdEl || !ulCant || !ulDinero) return;
+
     let totalIngresos = 0;
     const agrupadoProductos = {};
 
@@ -363,63 +429,106 @@ class FruteriaApp {
     const topCantidad = [...listaStats].sort((a, b) => b.cantidad - a.cantidad).slice(0, 5);
     const topDinero = [...listaStats].sort((a, b) => b.dinero - a.dinero).slice(0, 5);
 
-    document.getElementById('metric-tickets').innerText = this.historialVentas.length;
-    document.getElementById('dash-ingresos').innerText = `$${totalIngresos.toFixed(2)}`;
-    document.getElementById('metric-top-prod').innerText = topCantidad.length > 0 ? topCantidad[0].nombre : '-';
+    ticketsEl.innerText = this.historialVentas.length;
+    ingresosEl.innerText = `$${totalIngresos.toFixed(2)}`;
+    topProdEl.innerText = topCantidad.length > 0 ? topCantidad[0].nombre : '-';
 
-    const ulCant = document.getElementById('list-top-cant');
-    const ulDinero = document.getElementById('list-top-dinero');
     ulCant.innerHTML = '';
     ulDinero.innerHTML = '';
 
     topCantidad.forEach((producto, index) => {
-      ulCant.innerHTML += `<li><span>${index + 1}. ${producto.nombre}</span> <span class="badge">${producto.cantidad} ${producto.unidad}</span></li>`;
+      ulCant.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center"><span>${index + 1}. ${producto.nombre}</span><span class="badge text-bg-success rounded-pill">${producto.cantidad} ${producto.unidad}</span></li>`;
     });
 
     topDinero.forEach((producto, index) => {
-      ulDinero.innerHTML += `<li><span>${index + 1}. ${producto.nombre}</span> <span class="badge" style="background:#e3f2fd; color:#1565c0;">$${producto.dinero.toFixed(2)}</span></li>`;
+      ulDinero.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center"><span>${index + 1}. ${producto.nombre}</span><span class="badge text-bg-primary rounded-pill">$${producto.dinero.toFixed(2)}</span></li>`;
     });
   }
 
   actualizarTablas() {
     const tbodyInv = document.getElementById('tabla-inventario');
     const gridCaja = document.getElementById('grid-productos');
+    if (!tbodyInv && !gridCaja) return;
 
-    tbodyInv.innerHTML = '';
-    gridCaja.innerHTML = '';
+    if (tbodyInv) tbodyInv.innerHTML = '';
+    if (gridCaja) gridCaja.innerHTML = '';
+
+    const isCompactGrid = !!(gridCaja && gridCaja.classList.contains('grid-compact'));
 
     this.productos.forEach(producto => {
-      const imgTag = producto.imagen ? `<img src="${producto.imagen}">` : '<div style="font-size:40px;">📦</div>';
+      const imgTagTable = producto.imagen
+        ? `<img src="${producto.imagen}" alt="${Utils.escapeHtml(producto.nombre)}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;">`
+        : '<div class="bg-light border rounded d-flex align-items-center justify-content-center" style="width:56px; height:56px;">📦</div>';
+      const imgTagCard = producto.imagen
+        ? `<img src="${producto.imagen}" alt="${Utils.escapeHtml(producto.nombre)}" class="card-img-top" style="height:120px; object-fit:cover;">`
+        : '<div class="bg-light border-bottom d-flex align-items-center justify-content-center" style="height:120px;">📦</div>';
       const unidadTxt = producto.unidad === 'pza' ? 'pza' : 'kg';
       const nombreSeguro = Utils.escapeHtml(producto.nombre);
 
       let htmlPromos = '';
       (producto.promociones || []).forEach(promo => {
-        htmlPromos += `<div class="promo">${promo.cant}${unidadTxt} x $${promo.precio}</div>`;
+        htmlPromos += `<span class="badge text-bg-warning me-1">${promo.cant}${unidadTxt} x $${promo.precio}</span>`;
       });
 
-      tbodyInv.innerHTML += `
+      if (tbodyInv) {
+        tbodyInv.innerHTML += `
         <tr>
-          <td>${imgTag}</td>
+          <td>${imgTagTable}</td>
           <td><strong>${nombreSeguro}</strong><br><small>$${producto.precio.toFixed(2)} / ${unidadTxt}</small></td>
           <td>
-            <button class="btn-action btn-warning btn-small" onclick="editarProducto(${producto.id})">✏️</button>
-            <button class="btn-action btn-danger btn-small" onclick="eliminarProducto(${producto.id})">🗑️</button>
+            <button class="btn btn-sm btn-outline-warning me-1" onclick="editarProducto(${producto.id})">Editar</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="eliminarProducto(${producto.id})">Eliminar</button>
           </td>
         </tr>`;
+      }
 
-      gridCaja.innerHTML += `
-        <div class="card" id="card-${producto.id}" onclick='seleccionarProductoCaja(${producto.id}, ${JSON.stringify(producto.nombre)}, ${JSON.stringify(unidadTxt)})'>
-          ${imgTag}
-          <div class="title">${nombreSeguro}</div>
-          <div class="price">$${producto.precio.toFixed(2)} / ${unidadTxt}</div>
-          ${htmlPromos}
+      if (gridCaja) {
+        const promoCompact = (producto.promociones || []).length > 0
+          ? '<span class="badge text-bg-warning mt-1">Promo</span>'
+          : '';
+
+        const cardBodyHtml = isCompactGrid
+          ? `
+            <div class="card-body p-1 text-center">
+              <div class="title fw-semibold text-truncate" style="font-size:11px;">${nombreSeguro}</div>
+              <div class="price text-secondary" style="font-size:10px;">$${producto.precio.toFixed(2)} / ${unidadTxt}</div>
+              ${promoCompact}
+            </div>`
+          : `
+            <div class="card-body">
+              <div class="title fw-semibold">${nombreSeguro}</div>
+              <div class="price text-secondary small mb-2">$${producto.precio.toFixed(2)} / ${unidadTxt}</div>
+              <div>${htmlPromos}</div>
+            </div>`;
+
+        const imageBlock = isCompactGrid
+          ? (producto.imagen
+            ? `<img src="${producto.imagen}" alt="${Utils.escapeHtml(producto.nombre)}" class="card-img-top" style="height:58px; object-fit:cover; filter:blur(0.6px);">`
+            : '<div class="bg-light border-bottom d-flex align-items-center justify-content-center" style="height:58px;">📦</div>')
+          : imgTagCard;
+
+        const compactCardStyle = isCompactGrid
+          ? 'cursor:pointer; aspect-ratio:1/1;'
+          : 'cursor:pointer;';
+
+        gridCaja.innerHTML += `
+        <div class="col product-item">
+          <div class="card product-card h-100" id="card-${producto.id}" style="${compactCardStyle}" onclick='seleccionarProductoCaja(${producto.id}, ${JSON.stringify(producto.nombre)}, ${JSON.stringify(unidadTxt)})'>
+            ${imageBlock}
+            ${cardBodyHtml}
+          </div>
         </div>`;
+      }
     });
+
+    this.filtrarInventario();
   }
 
   renderizarCuenta() {
     const tbodyCuenta = document.getElementById('tabla-cuenta');
+    const totalCuenta = document.getElementById('total-cuenta');
+    if (!tbodyCuenta || !totalCuenta) return;
+
     let total = 0;
 
     tbodyCuenta.innerHTML = '';
@@ -431,11 +540,11 @@ class FruteriaApp {
           <td>${Utils.escapeHtml(item.nombre)} <br><small style="color:#d84315">${Utils.escapeHtml(item.notaPromo)}</small></td>
           <td>${item.cantidad} ${item.unidad || 'kg'}</td>
           <td>$${item.subtotal.toFixed(2)}</td>
-          <td><button class="btn-action btn-danger btn-small" onclick="eliminarDeCuenta(${item.idTicket})">❌</button></td>
+          <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarDeCuenta(${item.idTicket})">Quitar</button></td>
         </tr>`;
     });
 
-    document.getElementById('total-cuenta').innerText = total.toFixed(2);
+    totalCuenta.innerText = total.toFixed(2);
     this.calcularCambio();
   }
 }

@@ -1,18 +1,23 @@
-const STATIC_CACHE = 'fruteria-static-v9';
-const RUNTIME_CACHE = 'fruteria-runtime-v9';
+const STATIC_CACHE = 'fruteria-static-v10';
+const RUNTIME_CACHE = 'fruteria-runtime-v10';
 
 const urlsToPrecache = [
   './',
   './index.html',
-  './styles.css',
-  './js/core/utils.js',
-  './js/services/storage.service.js',
-  './js/services/image.service.js',
-  './js/services/promotion.engine.js',
-  './js/app/fruteria.app.js',
-  './js/main.js',
+  './src/content/inventario.html',
+  './src/content/ventas.html',
+  './src/content/historial.html',
+  './src/content/reporte.html',
+  './src/css/bootstrap/bootstrap.min.css',
+  './src/js/bootstrap/bootstrap.bundle.min.js',
+  './src/js/core/utils.js',
+  './src/js/services/storage.service.js',
+  './src/js/services/image.service.js',
+  './src/js/services/promotion.engine.js',
+  './src/js/app/fruteria.app.js',
+  './src/js/main.js',
   './manifest.json',
-  './favicon.ico',
+  './src/img/favicon.ico',
   './sw.js'
 ];
 

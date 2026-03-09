@@ -3,196 +3,117 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Frutería y Legumbres</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frutas y Legumbres</title>
+  <meta name="description"
+    content="Proycto para un punto de venta de frutas y legumbres, con gestión de inventario, ventas e historial. Desarrollado con HTML, CSS y JavaScript.">
+  <meta name="author" content="Luis Francisco Matlalcuatzi Gonzalez.">
+  <meta name="keywords"
+    content="frutas, legumbres, venta, inventario, punto de venta, POS, gestión de ventas, historial de ventas, dashboard, JavaScript, HTML, CSS">
   <meta name="theme-color" content="#2e7d32">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="/src/img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="./src/css/bootstrap/bootstrap.min.css">
+  <script src="./src/js/bootstrap/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-  <div class="container py-3 py-md-4">
-    <div class="tabs">
-      <button id="btn-caja" class="active" onclick="cambiarPestana('caja')">🛒 Caja</button>
-      <button id="btn-inventario" onclick="cambiarPestana('inventario')">📦 Inventario</button>
-      <button id="btn-ventas" onclick="cambiarPestana('ventas')">🧾 Historial</button>
-      <button id="btn-dashboard" onclick="cambiarPestana('dashboard')">📈 Dashboard</button>
+  <nav class="navbar navbar-expand-lg bg-success-subtle border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-semibold text-success" href="./index.html">Frutas y Legumbres</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar" aria-expanded="false" aria-label="Abrir navegacion">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="./index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="./src/content/inventario.html">Inventario</a></li>
+          <li class="nav-item"><a class="nav-link" href="./src/content/ventas.html">Ventas</a></li>
+          <li class="nav-item"><a class="nav-link" href="./src/content/historial.html">Historial</a></li>
+          <li class="nav-item"><a class="nav-link" href="./src/content/reporte.html">Reportes</a></li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <div id="caja" class="tab-content active">
-      <div class="layout-caja row g-3">
-        <div class="catalogo col-12 col-xl-7">
-          <h2>Catálogo</h2>
-          <input type="text" id="buscador-caja" placeholder="🔍 Buscar producto... (Ej. Limón)"
-            onkeyup="filtrarProductos()" style="margin-bottom: 15px;">
-          <div id="grid-productos" class="grid"></div>
-        </div>
-
-        <div class="ticket-panel col-12 col-xl-5">
-          <h2>Ticket Actual</h2>
-          <div class="venta-controles">
-            <p id="producto-seleccionado-txt">Selecciona un producto...</p>
-            <input type="hidden" id="id-seleccionado">
-            <input type="number" inputmode="decimal" id="cantidad-venta" placeholder="Cantidad" step="0.01">
-
-            <label style="display: block; margin: 10px 0; font-size: 14px; color: #555;">
-              <input type="checkbox" id="forzar-promo" checked> Aplicar promoción (si cumple)
-            </label>
-
-            <button class="btn-action" onclick="agregarACuenta()">Agregar al Ticket</button>
-          </div>
-
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>Prod</th>
-                  <th>Cant</th>
-                  <th>Sub</th>
-                  <th>❌</th>
-                </tr>
-              </thead>
-              <tbody id="tabla-cuenta"></tbody>
-            </table>
-          </div>
-
-          <div class="totales-section">
-            <div class="total">Total: $<span id="total-cuenta">0.00</span></div>
-            <div class="cambio-section">
-              <label>Pago: $</label>
-              <input type="number" inputmode="decimal" id="pago-cliente" placeholder="0.00" oninput="calcularCambio()">
+  <main class="container py-4 flex-grow-1">
+    <div class="row g-3">
+      <div class="col-12 col-xl-7">
+        <div class="card shadow-sm h-100">
+          <div class="card-body d-flex flex-column">
+            <h2 class="h4 mb-3">Caja</h2>
+            <input type="text" id="buscador-caja" class="form-control mb-3" placeholder="Buscar producto..."
+              onkeyup="filtrarProductos()">
+            <div id="grid-productos" class="row row-cols-3 g-2 overflow-auto grid-compact" style="max-height: 248px;">
             </div>
-            <div class="total">Cambio: $<span id="cambio-cliente">0.00</span></div>
           </div>
-
-          <button class="btn-action btn-danger" onclick="terminarVenta()">✅ Cobrar y Registrar Venta</button>
-          <button class="btn-action btn-warning" style="margin-top:5px;" onclick="limpiarCuenta()">Limpiar Ticket (Sin
-            cobrar)</button>
         </div>
       </div>
-    </div>
 
-    <div id="inventario" class="tab-content">
-      <h2>Gestión de Productos</h2>
-      <div class="form-inventario">
-        <input type="hidden" id="edit-id">
-        <input type="text" id="nombre-prod" placeholder="Nombre (Ej. Naranja)">
+      <div class="col-12 col-xl-5">
+        <div class="card shadow-sm h-100">
+          <div class="card-body d-flex flex-column">
+            <h2 class="h4 mb-3">Ticket Actual</h2>
 
-        <div style="display: flex; gap: 10px;">
-          <input type="number" inputmode="decimal" id="precio-prod" placeholder="Precio Normal ($)" step="0.50"
-            style="flex: 2;">
-          <select id="unidad-prod" style="flex: 1;">
-            <option value="kg">Por Kilo</option>
-            <option value="pza">Por Pieza</option>
-          </select>
-        </div>
+            <p id="producto-seleccionado-txt" class="text-secondary mb-2">Selecciona un producto...</p>
+            <input type="hidden" id="id-seleccionado">
 
-        <label for="img-prod">Foto del producto:</label>
-        <input type="file" id="img-prod" accept="image/*" onchange="comprimirYConvertirImagen(event)">
-        <input type="hidden" id="img-base64">
-        <img id="preview-img" style="display:none; width: 100px; margin: 10px 0; border-radius: 8px;">
+            <input type="number" inputmode="decimal" id="cantidad-venta" class="form-control mb-2"
+              placeholder="Cantidad" step="0.01">
 
-        <div style="background: #f1f8e9; padding: 10px; border-radius: 8px; margin-top: 10px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h4 style="margin: 0;">Promociones</h4>
-            <button type="button" class="btn-action btn-small" style="background: #1976d2; margin: 0;"
-              onclick="agregarFilaPromo()">➕ Agregar Promo</button>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="forzar-promo" checked>
+              <label class="form-check-label" for="forzar-promo">Aplicar promocion (si cumple)</label>
+            </div>
+
+            <button class="btn btn-success mb-3" onclick="agregarACuenta()">Agregar al Ticket</button>
+
+            <div class="table-responsive mb-3">
+              <table class="table table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Prod</th>
+                    <th>Cant</th>
+                    <th>Sub</th>
+                    <th>X</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-cuenta"></tbody>
+              </table>
+            </div>
+
+            <div class="border rounded p-3 mb-3 bg-light">
+              <div class="fw-semibold mb-2">Total: $<span id="total-cuenta">0.00</span></div>
+              <div class="input-group mb-2">
+                <span class="input-group-text">Pago $</span>
+                <input type="number" inputmode="decimal" id="pago-cliente" class="form-control" placeholder="0.00"
+                  oninput="calcularCambio()">
+              </div>
+              <div class="fw-semibold">Cambio: $<span id="cambio-cliente">0.00</span></div>
+            </div>
+
+            <button class="btn btn-danger mb-2" onclick="terminarVenta()">Cobrar y Registrar Venta</button>
+            <button class="btn btn-warning" onclick="limpiarCuenta()">Limpiar Ticket (Sin cobrar)</button>
           </div>
-          <div id="lista-promos" style="margin-top: 10px;"></div>
-        </div>
-
-        <button class="btn-action" onclick="guardarProducto()">Guardar Producto</button>
-        <button class="btn-action btn-warning" onclick="limpiarFormularioInventario()">Limpiar Formulario</button>
-      </div>
-
-      <h3>Catálogo Actual</h3>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Foto</th>
-              <th>Info</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-inventario"></tbody>
-        </table>
-      </div>
-
-      <hr style="margin-top: 20px; border: 1px solid #ddd;">
-      <h4>Respaldos de Seguridad</h4>
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button class="btn-action" style="background:#0277bd; width: auto; flex:1;" onclick="exportarDatos()">⬇️
-          Descargar Respaldo</button>
-        <button class="btn-action" style="background:#00838f; width: auto; flex:1;"
-          onclick="document.getElementById('import-file').click()">⬆️ Subir Respaldo</button>
-        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importarDatos(event)">
-      </div>
-    </div>
-
-    <div id="ventas" class="tab-content">
-      <h2>Historial y Corte</h2>
-      <div class="totales-section" style="background: #e8f5e9;">
-        <div class="total">Total Vendido Hoy: $<span id="total-dia">0.00</span></div>
-        <button class="btn-action btn-danger" onclick="borrarHistorial()">🗑️ Hacer Corte (Empezar en cero)</button>
-      </div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Hora</th>
-              <th>Detalle de Artículos</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-ventas"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="dashboard" class="tab-content">
-      <h2>Métricas del Día</h2>
-      <div class="dash-grid">
-        <div class="dash-card">
-          <h3>Ventas (Tickets)</h3>
-          <p id="metric-tickets" class="dash-number">0</p>
-        </div>
-        <div class="dash-card">
-          <h3>Ingresos Totales</h3>
-          <p id="dash-ingresos" class="dash-number">$0.00</p>
-        </div>
-        <div class="dash-card">
-          <h3>Producto Estrella</h3>
-          <p id="metric-top-prod" class="dash-text">-</p>
-        </div>
-      </div>
-
-      <div class="dash-lists">
-        <div class="dash-list-card">
-          <h3>🏆 Top 5: Más vendidos (Volumen)</h3>
-          <ul id="list-top-cant"></ul>
-        </div>
-        <div class="dash-list-card">
-          <h3>💰 Top 5: Más ganancias (Dinero)</h3>
-          <ul id="list-top-dinero"></ul>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
-  <script src="js/core/utils.js"></script>
-  <script src="js/services/storage.service.js"></script>
-  <script src="js/services/image.service.js"></script>
-  <script src="js/services/promotion.engine.js"></script>
-  <script src="js/app/fruteria.app.js"></script>
-  <script src="js/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+  <footer class="bg-light text-center py-1 mt-auto border-top">
+    <div class="container">
+      <span class="text-muted">Frutas y Legumbres. Por Luis Francisco Matlalcuatzi Gonzalez.</span>
+    </div>
+  </footer>
+
+  <script src="./src/js/core/utils.js"></script>
+  <script src="./src/js/services/storage.service.js"></script>
+  <script src="./src/js/services/image.service.js"></script>
+  <script src="./src/js/services/promotion.engine.js"></script>
+  <script src="./src/js/app/fruteria.app.js"></script>
+  <script src="./src/js/main.js"></script>
 </body>
 
 </html>

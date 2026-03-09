@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes | Frutas y Legumbres</title>
+  <meta name="description"
+    content="Proyecto para un punto de venta de frutas y legumbres, con gestion de inventario, ventas e historial.">
+  <meta name="author" content="Luis Francisco Matlalcuatzi Gonzalez.">
+  <meta name="theme-color" content="#2e7d32">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+  <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-expand-lg bg-success-subtle border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-semibold text-success" href="../../index.html">Frutas y Legumbres</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar" aria-expanded="false" aria-label="Abrir navegacion">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="../../index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="./inventario.html">Inventario</a></li>
+          <li class="nav-item"><a class="nav-link" href="./ventas.html">Ventas</a></li>
+          <li class="nav-item"><a class="nav-link" href="./historial.html">Historial</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="./reporte.html">Reportes</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4 flex-grow-1">
+    <h2 class="h4 mb-3">Metricas del Dia</h2>
+
+    <div class="dash-grid row g-3">
+      <div class="col-12 col-md-4">
+        <div class="dash-card card shadow-sm h-100">
+          <div class="card-body">
+            <h3 class="h6">Ventas (Tickets)</h3>
+            <p id="metric-tickets" class="dash-number fs-4 mb-0">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="dash-card card shadow-sm h-100">
+          <div class="card-body">
+            <h3 class="h6">Ingresos Totales</h3>
+            <p id="dash-ingresos" class="dash-number fs-4 mb-0">$0.00</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="dash-card card shadow-sm h-100">
+          <div class="card-body">
+            <h3 class="h6">Producto Estrella</h3>
+            <p id="metric-top-prod" class="dash-text fs-5 mb-0">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-lists row g-3 mt-1">
+      <div class="col-12 col-lg-6">
+        <div class="dash-list-card card shadow-sm h-100">
+          <div class="card-body">
+            <h3 class="h6">Top 5: Mas vendidos (Volumen)</h3>
+            <ul id="list-top-cant" class="list-group list-group-flush"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="dash-list-card card shadow-sm h-100">
+          <div class="card-body">
+            <h3 class="h6">Top 5: Mas ganancias (Dinero)</h3>
+            <ul id="list-top-dinero" class="list-group list-group-flush"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light text-center py-1 mt-auto border-top">
+    <div class="container">
+      <span class="text-muted">Frutas y Legumbres. Por Luis Francisco Matlalcuatzi Gonzalez.</span>
+    </div>
+  </footer>
+
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/services/storage.service.js"></script>
+  <script src="../js/services/image.service.js"></script>
+  <script src="../js/services/promotion.engine.js"></script>
+  <script src="../js/app/fruteria.app.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
+</html>
